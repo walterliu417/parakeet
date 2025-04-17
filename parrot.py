@@ -66,7 +66,7 @@ class Parrot:
             movelist.append(child.move.uci())
             child = min(child.children, key=lambda c: c.value)
         nps = helperfuncs.nodes / self.time_for_this_move
-        print(f"info depth 1 seldepth {len(movelist)} time {self.time_for_this_move} nodes {helperfuncs.nodes} score {cp} nps {nps} pv {" ".join(movelist)}")
+        print(f"info depth 1 seldepth {len(movelist)} time {self.time_for_this_move} nodes {helperfuncs.nodes} score {cp} nps {nps} pv {' '.join(movelist)}")
         return bestmove
 
 
