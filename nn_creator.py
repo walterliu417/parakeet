@@ -1,3 +1,4 @@
+# This is the model architecture. Note that it is not used in the actual engine, since the model has been converted to ONNX format.
 from helperfuncs import *
 
 class SE_Block(nn.Module):

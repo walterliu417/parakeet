@@ -54,7 +54,7 @@ class Node:
             boardlist = boardlist.tolist()
         pos = np.array(boardlist).astype(np.float32).reshape(1, 1, 8, 8)
         ort_inputs = {"input": pos}
-        return self.net.run(None, ort_inputs)
+        return self.net.run(None, ort_inputs)[0]
 
     def evaluate_position(self):
         if TABLEBASE and lt5(self.board):
@@ -107,7 +107,8 @@ class Node:
                     not_evaled.append(newnode)
 
         pos = np.array(all_positions).astype(np.float32).reshape(len(not_evaled), 1, 8, 8)
-        result = self.net.run(pos)
+        ort_inputs = {"input": pos}
+        result = self.net.run(None, ort_inputs)[0]
         for i in range(len(not_evaled)):
             not_evaled[i].value = float(result[i])
             evaled.append(not_evaled[i])
