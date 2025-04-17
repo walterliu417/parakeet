@@ -1,10 +1,7 @@
 import numpy as np
 import chess
-import torch
-import torch.nn as nn
 import helperfuncs
 from helperfuncs import *
-from nn_creator import *
 from search import *
 
 class Parrot:
@@ -12,15 +9,11 @@ class Parrot:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.time_remaining = 0
-        self.root_node = None
-        
-        model_name = "parrot"
-        self.model = ComplexModel(model_name)
-        state = torch.load(model_path, weights_only=True, map_location=device)
-        self.model.load_state_dict(state)
-        self.model.to(device)
-        self.model.eval()
-        print(self.model)
+        self.root_node = None  
+
+        sess_options = onnxruntime.SessionOptions()
+
+        self.model = onnxruntime.InferenceSession(model_path, sess_options, providers=[provider])
         print("Current best model loaded successfully!")
 
     def set_fen(self, fen):

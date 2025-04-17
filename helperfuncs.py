@@ -2,28 +2,24 @@ import time
 import chess
 import numpy as np
 import random
-import torch
-import torch.nn as nn
+import onnxruntime
 
 # Global variables
 nodes = 0
 factor = 1
 decay = 1
 quiescent = 0.05
-model_path = "parrot.pickle"
+model_path = "parrot.onnx" # Looks like an insane 100x speedup omggggg!
 
 # Configure device
 try:
-    device = xm.xla_device()
-    print("Running on the TPU")
+    assert 'CUDAExecutionProvider' in onnxruntime.get_available_providers()
+    provider = "CUDAExecutionProvider"
+    print("Running on the GPU")
 except:
-    if torch.cuda.is_available():
-        device = torch.device('cuda:0')
-        print('Running on the GPU')
-        torch.cuda.synchronize()
-    else:
-        device = torch.device('cpu')
-        print('Running on the CPU')
+    assert 'CPUExecutionProvider' in onnxruntime.get_available_providers()
+    provider = "CPUExecutionProvider"
+    print("Running on the CPU")
 
 # Look for Syzygy tablebase
 try:

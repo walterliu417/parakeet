@@ -2,3 +2,4 @@ build/
 parrot.spec
 venv/
 __pycache__/
+*.ppk

@@ -6,7 +6,7 @@ class Node:
     pass
 class Node:
 
-    def __init__(self, board: chess.Board, net: nn.Module, move: Optional[chess.Move]=None, parent: Optional[Node]=None, depth=0):
+    def __init__(self, board: chess.Board, net: onnxruntime.InferenceSession, move: Optional[chess.Move]=None, parent: Optional[Node]=None, depth=0):
         self.board = board
         self.move = move
         self.value = None
@@ -52,9 +52,9 @@ class Node:
         if not self.board.turn:
             boardlist = np.rot90(boardlist, 2) * -1
             boardlist = boardlist.tolist()
-        pos = torch.tensor(boardlist, device=device, dtype=torch.float).reshape(1, 1, 8, 8)
-        with torch.no_grad():
-            return self.net.forward(pos)
+        pos = np.array(boardlist).astype(np.float32).reshape(1, 1, 8, 8)
+        ort_inputs = {"input": pos}
+        return self.net.run(None, ort_inputs)
 
     def evaluate_position(self):
         if TABLEBASE and lt5(self.board):
@@ -106,8 +106,8 @@ class Node:
                     all_positions.append(boardlist)
                     not_evaled.append(newnode)
 
-        pos = torch.tensor(all_positions, device=device, dtype=torch.float).reshape(len(not_evaled), 1, 8, 8)
-        result = self.net.forward(pos)
+        pos = np.array(all_positions).astype(np.float32).reshape(len(not_evaled), 1, 8, 8)
+        result = self.net.run(pos)
         for i in range(len(not_evaled)):
             not_evaled[i].value = float(result[i])
             evaled.append(not_evaled[i])
