@@ -10,6 +10,7 @@ nodes = 0
 factor = 1
 decay = 1
 quiescent = 0.05
+model_path = "parrot.pickle"
 
 # Configure device
 try:

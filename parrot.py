@@ -1,3 +1,7 @@
+import numpy as np
+import chess
+import torch
+import torch.nn as nn
 import helperfuncs
 from helperfuncs import *
 from nn_creator import *
@@ -10,16 +14,14 @@ class Parrot:
         self.time_remaining = 0
         self.root_node = None
         
-        model_name = "complex2_parrot"
+        model_name = "parrot"
         self.model = ComplexModel(model_name)
-        state = torch.load(f"/content/drive/MyDrive/parrot/best_{model_name}.pickle", weights_only=True, map_location=device)
+        state = torch.load(model_path, weights_only=True, map_location=device)
         self.model.load_state_dict(state)
         self.model.to(device)
         self.model.eval()
         print(self.model)
         print("Current best model loaded successfully!")
-
-        self.run()
 
     def set_fen(self, fen):
         self.board = chess.Board(fen)
@@ -27,7 +29,7 @@ class Parrot:
     def search(self, movetime, wtime, btime):
         helperfuncs.nodes = 0
         if not self.root_node:
-            self.root_node = Node(self.board, None, self.model, None)
+            self.root_node = Node(self.board, self.model, None, None)
         else:
             tt = False
             for child in self.root_node.children:
@@ -35,7 +37,7 @@ class Parrot:
                     tt = True
                     self.root_node = child
                     break
-            if not tt: self.root_node = Node(self.board, None, self.model, None)
+            if not tt: self.root_node = Node(self.board, self.model, None, None)
         self.root_node.parent = None # Clear memory used by previous node
         
         if movetime > 0:
@@ -56,7 +58,7 @@ class Parrot:
             else:
                 # Endgame
                 self.time_for_this_move = (self.time_remaining / 25)
-        
+
         child = self.root_node.pns(time.time(), self.time_for_this_move)
 
         movelist = []
@@ -66,21 +68,24 @@ class Parrot:
             movelist.append(child.move.uci())
             child = min(child.children, key=lambda c: c.value)
         nps = helperfuncs.nodes / self.time_for_this_move
-        print(f"info depth 1 seldepth {len(movelist)} time {self.time_for_this_move} nodes {helperfuncs.nodes} score {cp} nps {nps} pv {' '.join(movelist)}")
+        print(f"info depth 1 seldepth {len(movelist)} time {self.time_for_this_move * 1000} nodes {helperfuncs.nodes} score {cp} nps {nps} pv {' '.join(movelist)}")
         return bestmove
 
 
 def run():
     while True:
         command = input()
-        command = command.split()
-        
+        if command == "":
+            continue
+        command = command.split()        
         if command[0] == "uci":
             print("id name Parrot v0.0")
             print("id author Walter Liu")
             print("option name explore_factor type spin default 100 min 0 max 100")
             print("option name quiescent_bonus type spin default 50 min 0 max 500")
             print("option name explore_decay type spin default 100 min 0 max 100")
+            print("option name tablebase_dir type string default /content/drive/MyDrive/parrot/tablebase_5pc")
+            print("option name net_path type string default parrot.pickle")
             print("uciok")
         elif command[0] == "isready":
             print("readyok")
@@ -105,12 +110,12 @@ def run():
             btime = 0
             if len(command) > 1:
                 if command[1] == "movetime":
-                    movetime = int(command[2])
+                    movetime = int(command[2]) / 1000
             if len(command) > 3:
                 if command[1] == "wtime":
-                    wtime = int(command[2])
+                    wtime = int(command[2]) / 1000
                 if command[3] == "btime":
-                    btime = int(command[4])
+                    btime = int(command[4]) / 1000
             print(f"bestmove {engine.search(movetime, wtime, btime)}")
         elif command[0] == "setoption":
             name = command[2]
@@ -120,6 +125,14 @@ def run():
                 helperfuncs.quiescent = float(command[4]) / 1000
             elif name == "explore_decay":
                 helperfuncs.decay = float(command[4]) / 100
+            elif name == "tablebase_dir":
+                try:
+                    TABLEBASE = chess.syzygy.open_tablebase(command[4])
+                    print(f"Tablebase found at {command[4]}.")
+                except:
+                    print("Tablebase not found!")
+            elif name == "net_path":
+                model_path = command[4]
 
 if __name__ == "__main__":
     run()

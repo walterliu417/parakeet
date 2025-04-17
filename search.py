@@ -1,11 +1,12 @@
 import helperfuncs
 from helperfuncs import *
+from typing import Optional
 
 class Node:
     pass
 class Node:
 
-    def __init__(self, board: chess.Board, move: chess.Move | None, net: nn.Module, parent: Node | None, depth=0):
+    def __init__(self, board: chess.Board, net: nn.Module, move: Optional[chess.Move]=None, parent: Optional[Node]=None, depth=0):
         self.board = board
         self.move = move
         self.value = None
@@ -88,7 +89,7 @@ class Node:
         for move in blm:
             newboard = self.board.copy()
             newboard.push(move)
-            newnode = Node(newboard, move, self.net, self, self.table, depth=self.depth + 1)
+            newnode = Node(newboard, self.net, move, self, depth=self.depth + 1)
             if newnode.board.halfmove_clock > 50:
                 newnode.value = 0.5
                 evaled.append(newnode)
@@ -116,7 +117,6 @@ class Node:
 
     def pns(self, start_time, time_for_this_move) -> Node:
         while time.time() - start_time < time_for_this_move:
-
             # 1. Traverse tree with UCT + quiescence and decreasing exploration with time.
             target_node = self
             while target_node.children != []:
@@ -144,6 +144,5 @@ class Node:
         # 4. Select move - UBFMS
         max_visits = max(self.children, key=lambda child: child.visits)
         selected_child = min(self.children, key=lambda child: child.value)
-        print(f"Visit statistics: Root {self.visits}, Max {max_visits.visits}, Selected {selected_child.visits}")
-        print(f"Evaluation: {self.value}")
+        print(f"info string root_visits {self.visits} max_visits {max_visits.visits} best_visits {selected_child.visits}")
         return selected_child
