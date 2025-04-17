@@ -115,7 +115,9 @@ class Node:
                 result = self.net.run(None, ort_inputs)[0]
                 break
             except:
-                continue
+                sess_options = onnxruntime.SessionOptions()
+                self.net = onnxruntime.InferenceSession(model_path, sess_options, providers=[provider])
+                helperfuncs.broken = True
 
         for i in range(len(not_evaled)):
             not_evaled[i].value = float(result[i])

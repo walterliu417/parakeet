@@ -20,6 +20,11 @@ class Parrot:
         self.board = chess.Board(fen)
 
     def search(self, movetime, wtime, btime):
+        if helperfuncs.broken:
+            helperfuncs.broken = False
+            sess_options = onnxruntime.SessionOptions()
+
+            self.model = onnxruntime.InferenceSession(model_path, sess_options, providers=[provider])
         helperfuncs.nodes = 0
         if not self.root_node:
             self.root_node = Node(self.board, self.model, None, None)
@@ -116,7 +121,7 @@ def run():
             if len(command) > 3 and command[3] == "btime":
                 btime = float(command[4]) / 1000.0
             if len(command) > 5 and command[5] == "btime":
-                btime = float(command[5]) / 1000.0
+                btime = float(command[6]) / 1000.0
 
             print(f"bestmove {engine.search(movetime, wtime, btime)}")
         elif command[0] == "setoption":

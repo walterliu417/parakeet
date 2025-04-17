@@ -11,6 +11,7 @@ factor = 1
 decay = 1
 quiescent = 0.05
 model_path = "parrot.onnx" # Looks like an insane 100x speedup omggggg!
+broken = False
 
 # Configure device
 try:
@@ -42,7 +43,12 @@ def int_to_bin(anint, pad=4):
     return [int(_) for _ in "0" * (pad - len(bin(anint)[2:])) + bin(anint)[2:]]
 
 def nn_to_cp(score):
-    return -2 * np.log((0.9 - score) / (score - 0.1))
+    if 0.1 < score < 0.9:
+        return -2 * np.log((0.9 - score) / (score - 0.1))
+    elif score <= 0.1:
+        return -100
+    elif score >= 0.9:
+        return 100
 
 def fast_board_to_boardmap(board):
     # Slower than piece_map() when there are less pieces on the board, but faster (~2x) in most cases.
