@@ -1,6 +1,9 @@
 import time
 import chess
+<<<<<<< HEAD
 import chess.syzygy
+=======
+>>>>>>> 1b1e1d15a30440e15800f5c3bd4a10a79ab4b4c3
 import numpy as np
 import random
 import onnxruntime

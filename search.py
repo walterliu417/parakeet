@@ -108,6 +108,7 @@ class Node:
 
         pos = np.array(all_positions).astype(np.float32).reshape(len(not_evaled), 1, 8, 8)
         ort_inputs = {"input": pos}
+<<<<<<< HEAD
         while True:
             try:
                 # Weird BatchNorm error that happens sometimes?? Attempt to recover.
@@ -115,6 +116,9 @@ class Node:
                 break
             except:
                 continue
+=======
+        result = self.net.run(None, ort_inputs)[0]
+>>>>>>> 1b1e1d15a30440e15800f5c3bd4a10a79ab4b4c3
         for i in range(len(not_evaled)):
             not_evaled[i].value = float(result[i])
             evaled.append(not_evaled[i])
