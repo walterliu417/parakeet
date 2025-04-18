@@ -22,7 +22,7 @@ class Parrot:
             helperfuncs.broken = False
             sess_options = onnxruntime.SessionOptions()
 
-            self.model = onnxruntime.InferenceSession(helperfuncs.model_path, sess_options, providers=[helperfuncs.rovider])
+            self.model = onnxruntime.InferenceSession(helperfuncs.model_path, sess_options, providers=[helperfuncs.provider])
         helperfuncs.nodes = 0
         self.root_node = Node(self.board, self.model, None, None)
         
@@ -70,7 +70,7 @@ def run():
             print("option name explore_factor type spin default 100 min 0 max 100")
             print("option name capture_bonus type spin default 50 min 0 max 500")
             print("option name check_bonus type spin default 25 min 0 max 500")
-            print("option name explore_decay type spin default 100 min 0 max 100")
+            print("option name explore_decay type spin default 100 min 0 max 500")
             print("option name tablebase_dir type string default /content/drive/MyDrive/parrot/tablebase_5pc")
             print("option name net_path type string default parrot.pickle")
             print("option name gpu_enabled type check default true")

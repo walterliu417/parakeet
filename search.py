@@ -45,7 +45,7 @@ class Node:
             bonus = helperfuncs.check
         elif self.promotion:
             bonus = helperfuncs.quiescent
-        return self.value - helperfuncs.factor * (1 - helperfuncs.decay * time_fraction) * np.sqrt(np.log(self.parent.visits + 1) / (self.visits + 1)) - (bonus * helperfuncs.factor * (1 - helperfuncs.decay * time_fraction))
+        return self.value - helperfuncs.factor * (1 - (min(helperfuncs.decay, 1) * time_fraction)) * np.sqrt(np.log(self.parent.visits + 1) / (self.visits + 1)) - (bonus * helperfuncs.factor * (1 - min(helperfuncs.decay, 1) * time_fraction))
 
     def evaluate_nn(self):
         boardlist = fast_board_to_boardmap(self.board)
@@ -129,6 +129,7 @@ class Node:
 
 
     def pns(self, start_time, time_for_this_move) -> Node:
+        print(f"info explore_factor {helperfuncs.explore_factor} capture_bonus {helperfuncs.quiescent} check_bonus {helperfuncs.check} explore_decay {helperfuncs.decay}")
         while time.time() - start_time < time_for_this_move:
             # 1. Traverse tree with UCT + quiescence and decreasing exploration with time.
             target_node = self
