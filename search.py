@@ -57,14 +57,7 @@ class Node:
         return self.net.run(None, ort_inputs)[0]
 
     def evaluate_position(self):
-        if TABLEBASE and lt5(self.board):
-            result = TABLEBASE.probe_wdl(self.board)
-            if result == 2:
-                return 1
-            elif result == -2:
-                return 0
-            elif result in [-1, 0, 1]:
-                return 0.5
+        # Avoid threefold, since tablebases don't check for it for some reason.
         outcome = self.board.result(claim_draw=True)
         if outcome != "*":
             if (outcome == "1-0") and self.board.turn:
@@ -76,6 +69,14 @@ class Node:
             elif (outcome == "0-1") and not self.board.turn:
                 return 1 + max((10 - self.depth) / 10, 0)
             elif outcome == "1/2-1/2":
+                return 0.5
+        if TABLEBASE and lt5(self.board):
+            result = TABLEBASE.probe_wdl(self.board)
+            if result == 2:
+                return 1
+            elif result == -2:
+                return 0
+            elif result in [-1, 0, 1]:
                 return 0.5
         return None
 
@@ -106,18 +107,19 @@ class Node:
                     all_positions.append(boardlist)
                     not_evaled.append(newnode)
 
-        pos = np.array(all_positions).astype(np.float32).reshape(len(not_evaled), 1, 8, 8)
-        ort_inputs = {"input": pos}
+        if len(not_evaled) > 0:
+            pos = np.array(all_positions).astype(np.float32).reshape(len(not_evaled), 1, 8, 8)
+            ort_inputs = {"input": pos}
 
-        while True:
-            try:
-                # Weird BatchNorm error that happens sometimes?? Attempt to recover.
-                result = self.net.run(None, ort_inputs)[0]
-                break
-            except:
-                sess_options = onnxruntime.SessionOptions()
-                self.net = onnxruntime.InferenceSession(model_path, sess_options, providers=[provider])
-                helperfuncs.broken = True
+            while True:
+                try:
+                    # Weird BatchNorm error that happens sometimes?? Attempt to recover.
+                    result = self.net.run(None, ort_inputs)[0]
+                    break
+                except:
+                    sess_options = onnxruntime.SessionOptions()
+                    self.net = onnxruntime.InferenceSession(helperfuncs.model_path, sess_options, providers=[helperfuncs.provider])
+                    helperfuncs.broken = True
 
         for i in range(len(not_evaled)):
             not_evaled[i].value = float(result[i])

@@ -9,11 +9,9 @@ class Parrot:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.time_remaining = 0
-        self.root_node = None  
-
+        self.root_node = None 
         sess_options = onnxruntime.SessionOptions()
-
-        self.model = onnxruntime.InferenceSession(model_path, sess_options, providers=[provider])
+        self.model = onnxruntime.InferenceSession(helperfuncs.model_path, sess_options, providers=[helperfuncs.provider])
         print("Current best model loaded successfully!")
 
     def set_fen(self, fen):
@@ -24,20 +22,9 @@ class Parrot:
             helperfuncs.broken = False
             sess_options = onnxruntime.SessionOptions()
 
-            self.model = onnxruntime.InferenceSession(model_path, sess_options, providers=[provider])
+            self.model = onnxruntime.InferenceSession(helperfuncs.model_path, sess_options, providers=[helperfuncs.rovider])
         helperfuncs.nodes = 0
-        if not self.root_node:
-            self.root_node = Node(self.board, self.model, None, None)
-        else:
-            tt = False
-            for child in self.root_node.children:
-                if child.board.fen() == self.board.fen():
-                    tt = True
-                    self.root_node = child
-                    self.root_node.board = self.board # In case of threefold.
-                    break
-            if not tt: self.root_node = Node(self.board, self.model, None, None)
-        self.root_node.parent = None # Clear memory used by previous node
+        self.root_node = Node(self.board, self.model, None, None)
         
         if movetime > 0:
             self.time_for_this_move = movetime
@@ -85,6 +72,7 @@ def run():
             print("option name explore_decay type spin default 100 min 0 max 100")
             print("option name tablebase_dir type string default /content/drive/MyDrive/parrot/tablebase_5pc")
             print("option name net_path type string default parrot.pickle")
+            print("option name gpu_enabled type check default true")
             print("uciok")
         elif command[0] == "isready":
             print("readyok")
@@ -140,7 +128,12 @@ def run():
                 except:
                     print("Tablebase not found!")
             elif name == "net_path":
-                model_path = command[4]
+                helperfuncs.model_path = command[4]
+            elif name == "gpu_enabled":
+                if command[4] == "true":
+                    helperfuncs.provider = "CUDAExecutionProvider"
+                elif command[4] == "false":
+                    helperfuncs.provider = "CPUExecutionProvider"
 
 if __name__ == "__main__":
     run()

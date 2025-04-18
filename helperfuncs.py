@@ -13,15 +13,6 @@ quiescent = 0.05
 model_path = "parrot.onnx" # Looks like an insane 100x speedup omggggg!
 broken = False
 
-# Configure device
-try:
-    assert 'CUDAExecutionProvider' in onnxruntime.get_available_providers()
-    provider = "CUDAExecutionProvider"
-    print("Running on the GPU")
-except:
-    assert 'CPUExecutionProvider' in onnxruntime.get_available_providers()
-    provider = "CPUExecutionProvider"
-    print("Running on the CPU")
 
 # Look for Syzygy tablebase
 try:
