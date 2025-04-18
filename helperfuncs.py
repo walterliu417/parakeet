@@ -10,9 +10,10 @@ nodes = 0
 factor = 1
 decay = 1
 quiescent = 0.05
+check = 0.025
 model_path = "parrot.onnx" # Looks like an insane 100x speedup omggggg!
 broken = False
-
+provider = "CUDAExecutionProvider" # default: gpu enabled.
 
 # Look for Syzygy tablebase
 try:

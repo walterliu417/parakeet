@@ -40,12 +40,12 @@ class Node:
     def ucb(self, time_fraction):
         bonus = 0
         if self.capture:
-            bonus = quiescent
+            bonus = helperfuncs.quiescent
         elif self.check:
-            bonus = quiescent / 2
+            bonus = helperfuncs.check
         elif self.promotion:
-            bonus = quiescent
-        return self.value - factor * (1 - decay * time_fraction) * np.sqrt(np.log(self.parent.visits + 1) / (self.visits + 1)) - (bonus * factor * (1 - decay * time_fraction))
+            bonus = helperfuncs.quiescent
+        return self.value - helperfuncs.factor * (1 - helperfuncs.decay * time_fraction) * np.sqrt(np.log(self.parent.visits + 1) / (self.visits + 1)) - (bonus * helperfuncs.factor * (1 - helperfuncs.decay * time_fraction))
 
     def evaluate_nn(self):
         boardlist = fast_board_to_boardmap(self.board)

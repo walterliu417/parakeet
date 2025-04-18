@@ -68,7 +68,8 @@ def run():
             print("id name Parrot v0.0")
             print("id author Walter Liu")
             print("option name explore_factor type spin default 100 min 0 max 100")
-            print("option name quiescent_bonus type spin default 50 min 0 max 500")
+            print("option name capture_bonus type spin default 50 min 0 max 500")
+            print("option name check_bonus type spin default 25 min 0 max 500")
             print("option name explore_decay type spin default 100 min 0 max 100")
             print("option name tablebase_dir type string default /content/drive/MyDrive/parrot/tablebase_5pc")
             print("option name net_path type string default parrot.pickle")
@@ -117,8 +118,10 @@ def run():
             name = command[2]
             if name == "explore_factor":
                 helperfuncs.factor = float(command[4]) / 100.0
-            elif name == "quiescent_bonus":
+            elif name == "capture_bonus":
                 helperfuncs.quiescent = float(command[4]) / 1000.0
+            elif name == "check_bonus":
+                helperfuncs.check = float(command[4]) / 1000.0
             elif name == "explore_decay":
                 helperfuncs.decay = float(command[4]) / 100.0
             elif name == "tablebase_dir":
