@@ -34,6 +34,7 @@ class Parrot:
                 if child.board.fen() == self.board.fen():
                     tt = True
                     self.root_node = child
+                    self.root_node.board = self.board # In case of threefold.
                     break
             if not tt: self.root_node = Node(self.board, self.model, None, None)
         self.root_node.parent = None # Clear memory used by previous node
