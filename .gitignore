@@ -1,5 +1,10 @@
 build/
+dist/
 parrot.spec
 venv/
 __pycache__/
 *.ppk
+whiteboard.py
+*.log
+*.pgn
+config.json

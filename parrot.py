@@ -24,7 +24,18 @@ class Parrot:
 
             self.model = onnxruntime.InferenceSession(helperfuncs.model_path, sess_options, providers=[helperfuncs.provider])
         helperfuncs.nodes = 0
-        self.root_node = Node(self.board, self.model, None, None)
+        
+        if not self.root_node:
+            self.root_node = Node(self.board, self.model, None, None)
+        else:
+            tt = False
+            for child in self.root_node.children:
+                if child.board.fen() == self.board.fen():
+                    tt = True
+                    self.root_node = child
+                    break
+            if not tt: self.root_node = Node(self.board, self.model, None, None)
+        self.root_node.parent = None # Clear memory used by previous node
         
         if movetime > 0:
             self.time_for_this_move = movetime

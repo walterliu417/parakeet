@@ -129,7 +129,7 @@ class Node:
 
 
     def pns(self, start_time, time_for_this_move) -> Node:
-        print(f"info explore_factor {helperfuncs.explore_factor} capture_bonus {helperfuncs.quiescent} check_bonus {helperfuncs.check} explore_decay {helperfuncs.decay}")
+        print(f"info explore_factor {helperfuncs.factor} capture_bonus {helperfuncs.quiescent} check_bonus {helperfuncs.check} explore_decay {helperfuncs.decay}")
         while time.time() - start_time < time_for_this_move:
             # 1. Traverse tree with UCT + quiescence and decreasing exploration with time.
             target_node = self
@@ -149,7 +149,11 @@ class Node:
                     if target_node.value is None:
                         target_node.value = target_node.evaluate_nn()
                 else:
-                    target_node.value = 1 - min(target_node.children, key=lambda child: child.value).value
+                    best_child_value = 1 - min(target_node.children, key=lambda child: child.value).value
+                    if target_node.value is None:
+                        target_node.value = best_child_value
+                    else:
+                        target_node.value = (target_node.value + best_child_value) / 2 # Attempt an average to smooth things out?
                 if target_node.parent is not None:
                     target_node = target_node.parent
                 else:
