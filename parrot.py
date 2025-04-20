@@ -53,8 +53,8 @@ class Parrot:
                 # Midgame - use time
                 self.time_for_this_move = self.time_remaining * 0.8 / 25
             else:
-                # Endgame
-                self.time_for_this_move = (self.time_remaining / 25)
+                # Endgame - save time so there are no blunders later on!
+                self.time_for_this_move = (self.time_remaining / 40)
 
         child = self.root_node.pns(time.time(), self.time_for_this_move)
 
@@ -65,7 +65,7 @@ class Parrot:
             movelist.append(child.move.uci())
             child = min(child.children, key=lambda c: c.value)
         nps = helperfuncs.nodes / self.time_for_this_move
-        print(f"info depth 1 seldepth {len(movelist)} time {self.time_for_this_move * 1000} nodes {helperfuncs.nodes} score {cp} nps {nps} pv {' '.join(movelist)}")
+        print(f"info depth 1 seldepth {len(movelist)} time {int(self.time_for_this_move * 1000)} nodes {helperfuncs.nodes} score {cp} nps {int(nps)} pv {' '.join(movelist)}")
         return bestmove
 
 
@@ -83,7 +83,7 @@ def run():
             print("option name check_bonus type spin default 25 min 0 max 500")
             print("option name explore_decay type spin default 100 min 0 max 500")
             print("option name tablebase_dir type string default /content/drive/MyDrive/parrot/tablebase_5pc")
-            print("option name net_path type string default parrot.pickle")
+            print("option name net_path type string default parrot.onnx")
             print("option name gpu_enabled type check default true")
             print("uciok")
         elif command[0] == "isready":
@@ -128,7 +128,7 @@ def run():
         elif command[0] == "setoption":
             name = command[2]
             if name == "explore_factor":
-                helperfuncs.factor = float(command[4]) / 100.0
+                helperfuncs.factor = float(command[4]) /  100.0
             elif name == "capture_bonus":
                 helperfuncs.quiescent = float(command[4]) / 1000.0
             elif name == "check_bonus":
@@ -137,7 +137,7 @@ def run():
                 helperfuncs.decay = float(command[4]) / 100.0
             elif name == "tablebase_dir":
                 try:
-                    TABLEBASE = chess.syzygy.open_tablebase(command[4])
+                    helperfuncs.TABLEBASE = chess.syzygy.open_tablebase(command[4])
                     print(f"Tablebase found at {command[4]}.")
                 except:
                     print("Tablebase not found!")

@@ -17,6 +17,7 @@ class Node:
         self.net = net
         self.children = []
         self.flag = None
+        self.terminal = False
 
         try:
             self.capture = self.parent.board.is_capture(self.move)
@@ -70,8 +71,8 @@ class Node:
                 return 1 + max((10 - self.depth) / 10, 0)
             elif outcome == "1/2-1/2":
                 return 0.5
-        if TABLEBASE and lt5(self.board):
-            result = TABLEBASE.probe_wdl(self.board)
+        if helperfuncs.TABLEBASE and lt5(self.board):
+            result = helperfuncs.TABLEBASE.probe_wdl(self.board)
             if result == 2:
                 return 1
             elif result == -2:
@@ -98,6 +99,7 @@ class Node:
                 score = newnode.evaluate_position()
                 if score is not None:
                     newnode.value = score
+                    newnode.terminal = True
                     evaled.append(newnode)
                 else:
                     boardlist = fast_board_to_boardmap(newboard)
@@ -141,26 +143,32 @@ class Node:
             # 2. Expansion and simulation
             target_node.generate_children()
             target_node.visits += 1
+            score = target_node.evaluate_position()
+            if score is not None:
+                target_node.terminal = True
+                target_node.value = score
 
-            # 3. Backpropagation
-            while True:
-                if target_node.children == []:
-                    target_node.value = target_node.evaluate_position()
-                    if target_node.value is None:
-                        target_node.value = target_node.evaluate_nn()
-                else:
-                    best_child_value = 1 - min(target_node.children, key=lambda child: child.value).value
-                    if target_node.value is None:
-                        target_node.value = best_child_value
+            if not target_node.terminal:
+
+                # 3. Backpropagation
+                while True:
+                    if target_node.children == []:
+                        target_node.value = target_node.evaluate_position()
+                        if target_node.value is None:
+                            target_node.value = target_node.evaluate_nn()
                     else:
-                        target_node.value = (target_node.value + best_child_value) / 2 # Attempt an average to smooth things out?
-                if target_node.parent is not None:
-                    target_node = target_node.parent
-                else:
-                    break
+                        best_child_value = 1 - min(target_node.children, key=lambda child: child.value).value
+                        if target_node.value is None:
+                            target_node.value = best_child_value
+                        else:
+                            target_node.value = target_node.value * 0.75 + best_child_value * 0.25 # Conservative update.
+                    if target_node.parent is not None:
+                        target_node = target_node.parent
+                    else:
+                        break
 
         # 4. Select move - UBFMS
         max_visits = max(self.children, key=lambda child: child.visits)
         selected_child = min(self.children, key=lambda child: child.value)
         print(f"info string root_visits {self.visits} max_visits {max_visits.visits} best_visits {selected_child.visits}")
-        return selected_child
+        return max_visits
