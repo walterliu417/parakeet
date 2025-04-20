@@ -61,7 +61,7 @@ class Parrot:
         movelist = []
         bestmove = child.move
         cp = nn_to_cp(self.root_node.value)
-        while child.children != []:
+        while (child.children != []) and not child.terminal:
             movelist.append(child.move.uci())
             child = min(child.children, key=lambda c: c.value)
         nps = helperfuncs.nodes / self.time_for_this_move
