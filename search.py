@@ -171,4 +171,7 @@ class Node:
         max_visits = max(self.children, key=lambda child: child.visits)
         selected_child = min(self.children, key=lambda child: child.value)
         print(f"info string root_visits {self.visits} max_visits {max_visits.visits} best_visits {selected_child.visits}")
-        return max_visits
+        if (selected_child.value > 0.7) and (selected_child.visits > 1):
+            return selected_child
+        else:
+            return max_visits
