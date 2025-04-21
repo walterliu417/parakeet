@@ -98,11 +98,7 @@ def run():
             sys.exit()
         elif command[0] == "position":
             if command[1] == "fen":
-                engine.set_fen(' '.join(command[2]))
-                if len(command) > 3:
-                    if command[3] == "moves":
-                        for move in command[4:]:
-                            engine.board.push_uci(move)
+                engine.set_fen(' '.join(command[2:]))
 
             elif command[1] == "startpos":
                 engine.set_fen(chess.STARTING_FEN)
