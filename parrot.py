@@ -65,7 +65,10 @@ class Parrot:
             movelist.append(child.move.uci())
             child = min(child.children, key=lambda c: c.value)
         nps = helperfuncs.nodes / self.time_for_this_move
-        print(f"info depth 1 seldepth {len(movelist)} time {int(self.time_for_this_move * 1000)} nodes {helperfuncs.nodes} score {cp} nps {int(nps)} pv {' '.join(movelist)}")
+        if len(movelist) != 0:
+            print(f"info depth 1 seldepth {len(movelist)} time {int(self.time_for_this_move * 1000)} nodes {helperfuncs.nodes} score {cp} nps {int(nps)} pv {' '.join(movelist)}")
+        else:
+            print(f"info depth 1 seldepth 1 time {int(self.time_for_this_move * 1000)} nodes {helperfuncs.nodes} score {cp} nps {int(nps)} pv {bestmove}")
         return bestmove
 
 
@@ -95,7 +98,7 @@ def run():
             sys.exit()
         elif command[0] == "position":
             if command[1] == "fen":
-                engine.set_fen(' '.join(command[2:]))
+                engine.set_fen(' '.join(command[2]))
                 if len(command) > 3:
                     if command[3] == "moves":
                         for move in command[4:]:

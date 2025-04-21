@@ -62,22 +62,22 @@ class Node:
         outcome = self.board.result(claim_draw=True)
         if outcome != "*":
             if (outcome == "1-0") and self.board.turn:
-                return 1 + max((10 - self.depth) / 10, 0)
+                return 2 + max((10 - self.depth) / 10, 0)
             elif (outcome == "0-1") and self.board.turn:
-                return 0 - max((10 - self.depth) / 10, 0)
+                return -1 - max((10 - self.depth) / 10, 0)
             elif (outcome == "1-0") and not self.board.turn:
-                return 0 - max((10 - self.depth) / 10, 0)
+                return -1 - max((10 - self.depth) / 10, 0)
             elif (outcome == "0-1") and not self.board.turn:
-                return 1 + max((10 - self.depth) / 10, 0)
+                return 2 + max((10 - self.depth) / 10, 0)
             elif outcome == "1/2-1/2":
                 return 0.5
         if helperfuncs.TABLEBASE and lt5(self.board):
-            result = helperfuncs.TABLEBASE.probe_wdl(self.board)
-            if result == 2:
-                return 1
-            elif result == -2:
-                return 0
-            elif result in [-1, 0, 1]:
+            result = helperfuncs.TABLEBASE.probe_dtz(self.board)
+            if 1 <= result <= 100:
+                return 1 + (100 - result) / 100
+            elif -100 <= result <= -1:
+                return 0 - (100 + result) / 100
+            elif result == 0 or (result < -100) or (result > 100):
                 return 0.5
         return None
 
@@ -92,8 +92,9 @@ class Node:
             newboard = self.board.copy()
             newboard.push(move)
             newnode = Node(newboard, self.net, move, self, depth=self.depth + 1)
-            if newnode.board.halfmove_clock > 50:
+            if newnode.board.halfmove_clock > 100:
                 newnode.value = 0.5
+                newnode.terminal = True
                 evaled.append(newnode)
             else:
                 score = newnode.evaluate_position()
@@ -171,7 +172,15 @@ class Node:
         max_visits = max(self.children, key=lambda child: child.visits)
         selected_child = min(self.children, key=lambda child: child.value)
         print(f"info string root_visits {self.visits} max_visits {max_visits.visits} best_visits {selected_child.visits}")
-        if (selected_child.value > 0.7) and (selected_child.visits > 1):
+        options = []
+        for child in self.children:
+            if child.visits == max_visits.visits:
+                options.append(child)
+        if (selected_child.value >= 1):
+            # Return best tablebase move immediately.
+            return selected_child
+        elif (selected_child.value > 0.7) and (selected_child.visits > 1):
+            # Attempt to force a win?
             return selected_child
         else:
-            return max_visits
+            return min(options, key=lambda c: c.value)
