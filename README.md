@@ -2,13 +2,13 @@ A Python chess engine using deep neural network evaluation and a quiescent varia
 Estimated ELO ~1600 but aspires to be the strongest Python chess engine!\
 Please contact me on Discord (@yoman417) or email walterliu417@gmail.com if there are any UCI bugs.\
 A list of UCI options can be found in uci_options.md in the docs folder.\
-For technical documentation on the engine, see technical.md in the docs folder.\
+For technical documentation on the engine, see technical.md in the docs folder.
 
-**Usage**
+**Usage**\
 In the Colab Notebooks folder, use parrot_implementation.ipynb to run as a Lichess bot, and parrot_tuning.ipynb to run games on fastchess.
 Parrot uses the UCI protocol.
 
-**Building from source**
+**Building from source**\
 On any terminal:
 Acquire the source code.
 ```
@@ -16,7 +16,7 @@ git clone https://github.com/walterliu417/parrot.git
 cd parrot
 python -m venv venv
 ```
-Activate the virtual Python environment.
+Activate the virtual Python environment.\
 Linux:
 ```
 source venv/bin/activate
