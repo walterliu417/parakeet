@@ -58,3 +58,4 @@ pyinstaller --onefile parrot.py
 - Engine Programming Discord for all the help the friendly people there gave me.
 - SOAP: Improving and Stabilising Shampoo using Adam. https://arxiv.org/abs/2409.11321
 - Lichess Evaluation and Puzzle Databases.
+- Fastchess, for testing the engine and tuning hyperparameters.
