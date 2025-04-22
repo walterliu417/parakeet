@@ -7,11 +7,11 @@ import onnxruntime
 
 # Global variables
 nodes = 0
-factor = 1
+factor = 0.2
 decay = 1
-quiescent = 0.05
-check = 0.025
-model_path = "parrot.onnx" # Looks like an insane 100x speedup omggggg!
+quiescent = 0.35
+check = 0.1
+model_path = "parrot.onnx" # Around 5x speedup on GPU.
 broken = False
 provider = "CUDAExecutionProvider" # default: gpu enabled.
 
