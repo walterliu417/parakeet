@@ -11,13 +11,13 @@ factor = 0.2
 decay = 1
 quiescent = 0.35
 check = 0.1
-model_path = "parrot.onnx" # Around 5x speedup on GPU.
+model_path = "parakeet.onnx" # Around 5x speedup on GPU.
 broken = False
 provider = "CUDAExecutionProvider" # default: gpu enabled.
 
 # Look for Syzygy tablebase
 try:
-    TABLEBASE = chess.syzygy.open_tablebase("/content/drive/MyDrive/parrot/tablebase_5pc")
+    TABLEBASE = chess.syzygy.open_tablebase("/content/drive/MyDrive/parakeet/tablebase_5pc")
     print("5 piece Syzygy endgame tablebase found.")
 except:
     print("Could not find tablebase")
