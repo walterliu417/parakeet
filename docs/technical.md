@@ -1,6 +1,6 @@
 **Neural network architecture and training**\
 
-The network used is a 10-layer Squeeze-and-Excite Network with Batch Normalisation and Mish nonlinearities.\
+The network used is a 10-layer Squeeze-and-Excite Network with Batch Normalisation and Mish nonlinearities.
 ```python
 self.conv_net = nn.Sequential()
         self.conv_net.add_module("Conv 1", nn.Conv2d(1, 200, 3, 1, 1))
@@ -52,7 +52,7 @@ self.conv_net = nn.Sequential()
 The network was trained on 33M positions from the Lichess evaluation database and 3M positions from the Lichess puzzle database, with each puzzle analysed for 1 second by Stockfish 16. A batch size of 2048 was used because of hardware limitations. The SOAP optimizer was used with an initial learning rate of 0.01 and this was decayed when no improvement in validation loss was seen.\
 \
 **Search algorithm**\
-The PUCT algorithm was used, with the exact formula being:\
+The PUCT algorithm was used, with the exact formula being:
 ```python
 self.value - helperfuncs.factor * (1 - (min(helperfuncs.decay, 1) * time_fraction)) * np.sqrt(np.log(self.parent.visits + 1) / (self.visits + 1)) - (bonus * helperfuncs.factor * (1 - min(helperfuncs.decay, 1) * time_fraction))
 ```
@@ -64,4 +64,4 @@ self.visits - Visits to the current node.\
 bonus - Quiescent bonus. If the last move leading to the position was a capture, the capture bonus is used. If the last move leading to the position was a check, the check bonus is used.\
 time_fraction - Fraction of time from the start of the search to the total time allocated for this move.\
 \
-Additionally, value smoothing is also employed. 25% of the value found from the newest search is averaged with 75% of the current value of the node during backprogation.\
+Additionally, value smoothing is also employed. 25% of the value found from the newest search is averaged with 75% of the current value of the node during backprogation.
