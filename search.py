@@ -121,6 +121,7 @@ class Node:
                     break
                 except:
                     sess_options = onnxruntime.SessionOptions()
+                    sess_options.intra_op_num_threads = helperfuncs.num_cores
                     self.net = onnxruntime.InferenceSession(helperfuncs.model_path, sess_options, providers=[helperfuncs.provider])
                     helperfuncs.broken = True
 
@@ -132,7 +133,7 @@ class Node:
 
 
     def pns(self, start_time, time_for_this_move) -> Node:
-        print(f"info explore_factor {helperfuncs.factor} capture_bonus {helperfuncs.quiescent} check_bonus {helperfuncs.check} explore_decay {helperfuncs.decay}")
+        print(f"info string explore_factor {helperfuncs.factor} capture_bonus {helperfuncs.quiescent} check_bonus {helperfuncs.check} explore_decay {helperfuncs.decay}")
         while time.time() - start_time < time_for_this_move:
             # 1. Traverse tree with UCT + quiescence and decreasing exploration with time.
             target_node = self

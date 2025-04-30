@@ -14,6 +14,7 @@ check = 0.1
 model_path = "parakeet.onnx" # Around 5x speedup on GPU.
 broken = False
 provider = "CUDAExecutionProvider" # default: gpu enabled.
+num_cores = 1
 
 # Look for Syzygy tablebase
 try:
