@@ -6,14 +6,14 @@ For technical documentation on the engine, see technical.md in the docs folder.
 
 **Usage**\
 In the Colab Notebooks folder, use parrot_implementation.ipynb to run as a Lichess bot, and parrot_tuning.ipynb to run games on fastchess.
-Parrot uses the UCI protocol.
+Parakeet uses the UCI protocol.
 
 **Building from source**\
 On any terminal:
 Acquire the source code.
 ```
-git clone https://github.com/walterliu417/parrot.git
-cd parrot
+git clone https://github.com/walterliu417/parakeet.git
+cd parakeet
 python -m venv venv
 ```
 Activate the virtual Python environment.\
@@ -39,12 +39,12 @@ pip install onnxruntime
 ```
 Run the engine:
 ```
-python parrot.py
+python parakeet.py
 ```
 If you wish to obtain an executable, simply use
 ```
 pip install pyinstaller
-pyinstaller --onefile parrot.py
+pyinstaller --onefile parakeet.py
 ```
 
 **Future plans**
